@@ -17,10 +17,21 @@ def get_images():
     print "inside the image thing"
     url = json_data.get('url')
     print url
-    images = BeautifulSoup.BeautifulSoup(requests.get(url).text).findAll("img",src=True)
+    soup = BeautifulSoup.BeautifulSoup(requests.get(url).text)
+    images = BeautifulSoup.BeautifulSoup(requests.get(url).text).findAll("img")
+    print "These are images " + str(images)
     urllist = []
+    og_image = (soup.find('meta', property='og:image') or soup.find('meta', attrs={'name': 'og:image'}))
+    if og_image and og_image['content']:
+        print "This is " + og_image['content']
+        urllist.append(urlparse.urljoin(url, og_image['content']))
+    thumbnail_spec = soup.find('link', rel='image_src')
+    print "This is thumbnail " + str(thumbnail_spec)
+    if thumbnail_spec and thumbnail_spec['href']:
+        urllist.append(urlparse.urljoin(url, thumbnail_spec['href']))
     for image in images:
         if "sprite" not in image["src"]:
             urllist.append(urlparse.urljoin(url, image["src"]))
+    print urllist
     print jsonify(imagelist=urllist)
     return jsonify(imagelist=urllist)
