@@ -31,8 +31,13 @@ app.factory('service',['$http','$q',function($http,$q){
 app.controller('thumbnailCtrl',['$scope','service',function($scope,service){
     
     $scope.sendurl = function(url){
-        $scope.url;
-        console.log($scope.url);
+        console.log(url);
+        if ((url.indexOf('www.')>=0)){
+            $scope.url = "http://" + url;
+        }
+        else{
+            $scope.url = "http://www." + url;
+        }
         service.thumbnailprocess($scope.url)
         .then(function(data){
            $scope.imagelist = data;
